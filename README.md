@@ -12,27 +12,31 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - [Tech Stack](#tech-stack)
 - [Tech Stack Rationale](#tech-stack-rationale)
 - [Setup Instructions](#setup-instructions)
+- [Google OAuth Setup](#google-oauth-setup)
 - [Project Structure](#project-structure)
 - [API Endpoints](#api-endpoints)
+- [Deployment to Vercel](#deployment-to-vercel)
 - [Assumptions](#assumptions)
 - [Future Enhancements](#future-enhancements)
 
 ## ✨ Features
 
-### User Authentication (Mandatory)
+### User Authentication
 - ✅ **User Registration** - Create a new account with email and password
 - ✅ **User Login** - Secure authentication with JWT tokens
+- ✅ **Google Sign-In** - OAuth authentication with Google
 - ✅ **User Logout** - Clear session and redirect to login
 - ✅ **Protected Routes** - Dashboard and task management require authentication
 - ✅ **Data Privacy** - Each user can only access their own tasks
 
-### Task Management - CRUD Operations (Mandatory)
+### Task Management - CRUD Operations
 - ✅ **Create Task** - Add new tasks with title, description, due date, priority, and status
 - ✅ **Read Tasks** - View all personal tasks in a clean, organized dashboard
 - ✅ **Update Task** - Edit existing task details
 - ✅ **Delete Task** - Remove tasks with confirmation
 - ✅ **Filter by Status** - Filter tasks by "To Do", "In Progress", or "Done"
 - ✅ **Search Tasks** - Search tasks by title or description
+- ✅ **Dark Mode** - Toggle between light and dark themes
 
 ### Task Fields
 - **Title** (Required) - Task name
@@ -50,6 +54,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - **Shadcn/ui** - High-quality, accessible UI components
 - **Axios** - HTTP client for API requests
 - **React Hooks** - useState, useEffect for state management
+- **Next Themes** - Dark mode support
 
 ### Backend
 - **Node.js** - JavaScript runtime
@@ -58,10 +63,11 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - **Mongoose** - MongoDB object modeling
 - **JWT** - JSON Web Tokens for authentication
 - **bcryptjs** - Password hashing
+- **google-auth-library** - Google OAuth verification
 
 ### Deployment
-- **Frontend**: Vercel / Netlify (recommended)
-- **Backend**: Railway / Render / Heroku
+- **Frontend**: Vercel (recommended for Next.js)
+- **Backend**: Railway / Render / Vercel Serverless Functions
 - **Database**: MongoDB Atlas (free tier)
 
 ## 💡 Tech Stack Rationale
@@ -97,6 +103,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - Node.js (v18 or higher)
 - npm or yarn
 - MongoDB Atlas account (free tier) or local MongoDB installation
+- Google Cloud Console account (for Google Sign-In)
 
 ### Backend Setup
 
@@ -115,13 +122,16 @@ A full-stack task management application built for the BREW Hiring Assignment. T
    MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_secret_jwt_key_here
    PORT=4000
+   GOOGLE_CLIENT_ID=your_google_client_id_here
    ```
+   
+   **Important**: For Google OAuth, use the same Client ID as your frontend (`NEXT_PUBLIC_GOOGLE_CLIENT_ID`). The backend verifies tokens created by the frontend.
 
 4. **Start the development server:**
    ```bash
    npm run dev
    ```
-
+   
    The server will run on `http://localhost:4000`
 
 ### Frontend Setup
@@ -139,6 +149,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 3. **Create a `.env.local` file in the frontend directory:**
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:4000/api
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id_here
    ```
 
 4. **Start the development server:**
@@ -161,6 +172,77 @@ A full-stack task management application built for the BREW Hiring Assignment. T
    - Install MongoDB locally
    - Use connection string: `mongodb://localhost:27017/tasktracker`
 
+## 🔐 Google OAuth Setup
+
+### Step 1: Create Google OAuth Credentials
+
+1. **Go to Google Cloud Console**
+   - Visit: https://console.cloud.google.com/
+   - Sign in with your Google account
+
+2. **Create a New Project (or select existing)**
+   - Click on the project dropdown at the top
+   - Click "New Project"
+   - Enter project name: "Task Tracker"
+   - Click "Create"
+
+3. **Enable Google Identity Services API**
+   - In the left sidebar, go to "APIs & Services" > "Library"
+   - Search for "Google Identity Services API" or "Google+ API"
+   - Click on it and click "Enable"
+
+4. **Configure OAuth Consent Screen**
+   - Go to "APIs & Services" > "OAuth consent screen"
+   - Choose "External" (unless you have a Google Workspace)
+   - Fill in required fields:
+     - App name: "Task Tracker"
+     - User support email: Your email
+     - Developer contact: Your email
+   - Click "Save and Continue"
+   - Add scopes: `email`, `profile`, `openid`
+   - Click "Save and Continue"
+   - Add test users (your email) if in testing mode
+   - Click "Save and Continue"
+
+5. **Create OAuth Client ID**
+   - Go to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "OAuth client ID"
+   - Application type: "Web application"
+   - Name: "Task Tracker Web Client"
+   - **Authorized JavaScript origins:**
+     - `http://localhost:3000` (for development)
+     - Add your production URL when deploying (e.g., `https://your-app.vercel.app`)
+   - **Authorized redirect URIs:**
+     - `http://localhost:3000` (for development)
+     - Your production URL when deploying
+   - Click "Create"
+   - **Copy the Client ID** - you'll need this!
+
+### Step 2: Add Environment Variables
+
+**Backend** (`server/.env`):
+```env
+GOOGLE_CLIENT_ID=your-google-client-id-here
+```
+
+**Frontend** (`frontend/.env.local`):
+```env
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id-here
+```
+
+**Important Notes:**
+- Use the **same Client ID** for both frontend and backend
+- The frontend creates the token, and the backend verifies it using the same Client ID
+- Add `.env` and `.env.local` to `.gitignore` (they should already be there)
+
+### Step 3: Test Google Sign-In
+
+1. Start your backend server
+2. Start your frontend development server
+3. Go to the login page
+4. You should see the Google Sign-In button
+5. Click it and test the authentication flow
+
 ## 📁 Project Structure
 
 ```
@@ -176,11 +258,14 @@ BREW - Task Tracker/
 │   │   ├── ui/          # Shadcn/ui components
 │   │   ├── TaskCard.tsx
 │   │   ├── TaskForm.tsx
+│   │   ├── login-form.tsx
 │   │   ├── Navbar.tsx
-│   │   └── ProtectedRoute.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── ThemeToggle.tsx
 │   ├── lib/
 │   │   ├── api.ts      # Axios configuration
-│   │   └── auth.ts     # Auth utilities
+│   │   ├── auth.ts     # Auth utilities
+│   │   └── utils.ts    # Utility functions
 │   └── package.json
 ├── server/
 │   ├── models/
@@ -216,6 +301,13 @@ BREW - Task Tracker/
   }
   ```
 
+- `POST /api/auth/google` - Google Sign-In
+  ```json
+  {
+    "credential": "google_id_token_here"
+  }
+  ```
+
 ### Tasks (Protected - Requires JWT Token)
 - `GET /api/tasks` - Get all tasks for authenticated user
 - `POST /api/tasks` - Create a new task
@@ -231,11 +323,104 @@ BREW - Task Tracker/
 - `PUT /api/tasks/:id` - Update a task
 - `DELETE /api/tasks/:id` - Delete a task
 
+## 🚀 Deployment to Vercel
+
+### Frontend Deployment (Next.js)
+
+1. **Push your code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Deploy to Vercel**
+   - Go to [Vercel](https://vercel.com)
+   - Sign in with your GitHub account
+   - Click "Add New Project"
+   - Import your GitHub repository
+   - Configure the project:
+     - **Root Directory**: `frontend`
+     - **Framework Preset**: Next.js (auto-detected)
+     - **Build Command**: `npm run build` (default)
+     - **Output Directory**: `.next` (default)
+     - **Install Command**: `npm install` (default)
+
+3. **Add Environment Variables in Vercel**
+   - Go to Project Settings > Environment Variables
+   - Add the following:
+     - `NEXT_PUBLIC_API_URL` = `https://your-backend-url.com/api`
+     - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = `your-google-client-id`
+   - **Important**: Update your Google OAuth authorized origins to include your Vercel URL
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will build and deploy your app
+   - You'll get a URL like `https://your-app.vercel.app`
+
+### Backend Deployment Options
+
+#### Option 1: Railway (Recommended for Express.js)
+
+1. **Sign up at [Railway](https://railway.app)**
+2. **Create a New Project**
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
+3. **Configure the Project**
+   - Set Root Directory to `server`
+   - Railway will auto-detect Node.js
+4. **Add Environment Variables**
+   - Go to Variables tab
+   - Add:
+     - `MONGO_URI` = your MongoDB connection string
+     - `JWT_SECRET` = your JWT secret
+     - `PORT` = `4000` (or leave empty, Railway auto-assigns)
+     - `GOOGLE_CLIENT_ID` = your Google Client ID
+5. **Deploy**
+   - Railway will automatically deploy
+   - You'll get a URL like `https://your-app.railway.app`
+   - Update `NEXT_PUBLIC_API_URL` in Vercel to this URL
+
+#### Option 2: Render
+
+1. **Sign up at [Render](https://render.com)**
+2. **Create a New Web Service**
+   - Connect your GitHub repository
+   - Set:
+     - **Name**: task-tracker-backend
+     - **Root Directory**: `server`
+     - **Environment**: Node
+     - **Build Command**: `npm install`
+     - **Start Command**: `npm start`
+3. **Add Environment Variables** (same as Railway)
+4. **Deploy**
+
+#### Option 3: Vercel Serverless Functions
+
+If you want to keep everything on Vercel, you can convert your Express.js backend to Vercel serverless functions. This requires refactoring your routes.
+
+### Post-Deployment Checklist
+
+1. ✅ Update Google OAuth authorized origins with production URLs
+2. ✅ Update `NEXT_PUBLIC_API_URL` in Vercel to your backend URL
+3. ✅ Ensure MongoDB Atlas allows connections from your backend IP (or use 0.0.0.0/0 for development)
+4. ✅ Test authentication flow on production
+5. ✅ Test Google Sign-In on production
+6. ✅ Verify CORS settings allow your frontend domain
+
+### Troubleshooting Deployment
+
+- **CORS Errors**: Make sure your backend CORS settings allow your Vercel frontend URL
+- **Environment Variables**: Double-check all environment variables are set correctly
+- **Google OAuth**: Ensure production URLs are added to Google Console authorized origins
+- **MongoDB Connection**: Verify MongoDB Atlas network access allows your backend server
+
 ## 🤔 Assumptions
 
 1. **REST API Architecture**: I assumed the assignment allowed a traditional REST API approach (Express.js + MongoDB) rather than requiring a serverless solution like Firebase. This provides more control over the backend logic and better demonstrates full-stack development skills.
 
-2. **Email/Password Authentication**: While the assignment mentions OAuth (Google) as an option, I implemented email/password authentication as it's more straightforward and demonstrates core authentication concepts. OAuth can be added as an enhancement.
+2. **OAuth Implementation**: Google Sign-In is implemented using Google Identity Services (newer approach) rather than the older OAuth 2.0 flow, providing a better user experience.
 
 3. **Task Privacy**: All tasks are automatically scoped to the authenticated user. The backend middleware ensures users can only access their own tasks, providing data privacy without requiring explicit user ID parameters in frontend requests.
 
@@ -247,18 +432,18 @@ BREW - Task Tracker/
 
 ## 🎯 Future Enhancements
 
-### Bonus Features (for extra points)
+### Bonus Features
+- [x] Google OAuth integration
+- [x] Dark mode toggle
 - [ ] Visual priority indicators (color-coded badges)
 - [ ] Advanced sorting (by priority, due date, creation date)
 - [ ] Task categories/tags
 - [ ] Drag-and-drop status updates
 - [ ] Task completion statistics
 - [ ] Export tasks to CSV/JSON
-- [ ] Dark mode toggle
 - [ ] Task reminders/notifications
 
 ### Additional Improvements
-- [ ] OAuth integration (Google Sign-In)
 - [ ] Real-time updates using WebSockets
 - [ ] Image attachments for tasks
 - [ ] Task templates
@@ -274,11 +459,13 @@ BREW - Task Tracker/
 
 2. **Security Implementation**: Walk through the JWT middleware that ensures users can only access their own tasks.
 
-3. **Filtering & Search**: Demonstrate the client-side filtering and search functionality, explaining the useMemo hook for performance optimization.
+3. **OAuth Integration**: Demonstrate Google Sign-In functionality and explain the token verification process.
 
-4. **Responsive Design**: Show the application working on different screen sizes, highlighting Tailwind's responsive utilities.
+4. **Filtering & Search**: Demonstrate the client-side filtering and search functionality, explaining the useMemo hook for performance optimization.
 
-5. **Code Organization**: Explain the separation between frontend and backend, and how the API layer abstracts HTTP requests.
+5. **Responsive Design**: Show the application working on different screen sizes, highlighting Tailwind's responsive utilities.
+
+6. **Code Organization**: Explain the separation between frontend and backend, and how the API layer abstracts HTTP requests.
 
 ## 📄 License
 
@@ -293,4 +480,3 @@ This project was created for the BREW Hiring Assignment.
 ---
 
 **Built with ❤️ for BREW**
-

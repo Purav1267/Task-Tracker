@@ -7,6 +7,8 @@ const User = require("../models/User");
 const router = express.Router();
 
 // Initialize Google OAuth client
+// Note: Use the frontend client ID for verification (same as NEXT_PUBLIC_GOOGLE_CLIENT_ID)
+// The token is created by the frontend, so we verify it with the same client ID
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // ============================
@@ -102,9 +104,10 @@ router.post("/google", async (req, res) => {
     }
 
     // Verify the Google token
+    // The audience should match the client ID used in the frontend
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CLIENT_ID, // This should be the same as NEXT_PUBLIC_GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();
