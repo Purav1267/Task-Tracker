@@ -1,0 +1,5 @@
+
+# Exclude deployment and implementation guides
+DEPLOYMENT_GUIDE.md
+GOOGLE_OAUTH_PRODUCTION_SETUP.md
+IMPLEMENTATION_SUMMARY.md
