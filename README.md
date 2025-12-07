@@ -357,9 +357,15 @@ This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. 
    heroku config:set GOOGLE_CLIENT_ID=your-google-client-id
    ```
 4. **Deploy:**
-   - Connect Heroku to GitHub in Heroku Dashboard
-   - Enable automatic deploys
-   - Or use: `git subtree push --prefix server heroku main`
+   - **Recommended Method:** Use direct push from server directory (see DEPLOY_BACKEND.md)
+   ```bash
+   cd server
+   git init && git add . && git commit -m "Deploy"
+   git remote add heroku https://git.heroku.com/task-tracker-backend-6647.git
+   git push heroku HEAD:main --force
+   rm -rf .git
+   ```
+   - **Alternative:** Connect Heroku to GitHub in Heroku Dashboard and enable automatic deploys
 
 ### Important Notes
 
