@@ -43,7 +43,6 @@ export function LoginForm({
     setError("");
 
     try {
-      // Send the credential to your backend
       const res = await api.post("/auth/google", {
         credential: response.credential,
       });
@@ -57,7 +56,6 @@ export function LoginForm({
   };
 
   useEffect(() => {
-    // Initialize Google Sign-In when component mounts
     const initGoogleSignIn = () => {
       if (typeof window !== "undefined" && (window as any).google) {
         const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -84,12 +82,10 @@ export function LoginForm({
       }
     };
 
-    // Wait for Google script to load
     if (typeof window !== "undefined") {
       if ((window as any).google) {
         initGoogleSignIn();
       } else {
-        // Wait for script to load
         const checkGoogle = setInterval(() => {
           if ((window as any).google) {
             initGoogleSignIn();
@@ -97,7 +93,6 @@ export function LoginForm({
           }
         }, 100);
 
-        // Cleanup after 5 seconds
         setTimeout(() => clearInterval(checkGoogle), 5000);
       }
     }

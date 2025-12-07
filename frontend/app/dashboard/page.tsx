@@ -40,14 +40,11 @@ export default function DashboardPage() {
     fetchTasks();
   }, []);
 
-  // Filter, search, and sort tasks
   const filteredTasks = useMemo(() => {
     let result = tasks.filter((task) => {
-      // Filter by status
       const statusMatch =
         filterStatus === "all" || task.status === filterStatus;
 
-      // Search by title or description
       const searchMatch =
         searchQuery === "" ||
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -57,7 +54,6 @@ export default function DashboardPage() {
       return statusMatch && searchMatch;
     });
 
-    // Sort tasks
     result.sort((a, b) => {
       switch (sortBy) {
         case "priority":
@@ -98,14 +94,12 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-800 dark:text-red-400">
             {error}
           </div>
         )}
 
-        {/* Filter, Search, and Sort Controls */}
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -153,7 +147,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Task List */}
         <div className="space-y-4">
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
@@ -175,7 +168,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Task Form Modal */}
       <TaskForm open={open} setOpen={setOpen} refresh={fetchTasks} />
     </ProtectedRoute>
   );

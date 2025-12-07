@@ -8,7 +8,6 @@ const taskRoutes = require("./routes/tasks");
 
 const app = express();
 
-// CORS configuration - allow requests from frontend
 const allowedOrigins = process.env.FRONTEND_URL 
   ? [process.env.FRONTEND_URL, 'http://localhost:3000'] 
   : '*';

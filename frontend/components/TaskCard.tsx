@@ -56,7 +56,6 @@ export default function TaskCard({ task, refresh }: TaskCardProps) {
     return STATUS_COLORS[status] || STATUS_COLORS["To Do"];
   };
 
-  // Check if task is overdue
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== "Done";
   const dueDateFormatted = task.dueDate 
     ? new Date(task.dueDate).toLocaleDateString('en-US', { 
@@ -136,10 +135,8 @@ export default function TaskCard({ task, refresh }: TaskCardProps) {
         </div>
       </Card>
 
-      {/* Edit Task Modal */}
       <TaskForm open={open} setOpen={setOpen} refresh={refresh} task={task} />
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>

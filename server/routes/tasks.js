@@ -4,7 +4,6 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 
-// CREATE TASK
 router.post("/", auth, async (req, res) => {
   try {
     const { title, description, dueDate, priority, status } = req.body;
@@ -29,7 +28,6 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// GET ALL TASKS
 router.get("/", auth, async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.user.id }).sort({
@@ -42,7 +40,6 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// UPDATE TASK
 router.put("/:id", auth, async (req, res) => {
   try {
     const updates = req.body;
@@ -63,7 +60,6 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
-// DELETE TASK
 router.delete("/:id", auth, async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({

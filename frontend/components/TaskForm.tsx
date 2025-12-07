@@ -39,7 +39,6 @@ export default function TaskForm({ open, setOpen, refresh, task }: TaskFormProps
 
   useEffect(() => {
     if (task) {
-      // Convert MongoDB date to Date object for calendar
       const dueDate = task.dueDate ? new Date(task.dueDate) : undefined;
       const dueDateString = task.dueDate
         ? new Date(task.dueDate).toISOString().split("T")[0]
@@ -54,7 +53,6 @@ export default function TaskForm({ open, setOpen, refresh, task }: TaskFormProps
         status: task.status,
       });
     } else {
-      // Reset form when creating new task
       setSelectedDate(undefined);
       setData({
         title: "",

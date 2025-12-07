@@ -6,19 +6,12 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// Initialize Google OAuth client
-// Note: Use the frontend client ID for verification (same as NEXT_PUBLIC_GOOGLE_CLIENT_ID)
-// The token is created by the frontend, so we verify it with the same client ID
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// ============================
-// REGISTER
-// ============================
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // validate
     if (!email || !password)
       return res.status(400).json({ message: "Email and password are required" });
 
@@ -26,18 +19,15 @@ router.post("/register", async (req, res) => {
     if (existing)
       return res.status(400).json({ message: "Email already registered" });
 
-    // hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // create user
     const user = await User.create({
       name,
       email,
       password: hashedPassword
     });
 
-    // create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d"
     });
@@ -56,9 +46,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ============================
-// LOGIN
-// ============================
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -92,9 +79,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ============================
-// GOOGLE SIGN-IN
-// ============================
 router.post("/google", async (req, res) => {
   try {
     const { credential } = req.body;
@@ -103,11 +87,9 @@ router.post("/google", async (req, res) => {
       return res.status(400).json({ message: "Google credential is required" });
     }
 
-    // Verify the Google token
-    // The audience should match the client ID used in the frontend
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID, // This should be the same as NEXT_PUBLIC_GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -117,11 +99,9 @@ router.post("/google", async (req, res) => {
       return res.status(400).json({ message: "Email not provided by Google" });
     }
 
-    // Check if user exists
     let user = await User.findOne({ email });
 
     if (user) {
-      // User exists - update Google info if needed
       if (!user.googleId) {
         user.googleId = googleId;
         user.authProvider = "google";
@@ -129,17 +109,14 @@ router.post("/google", async (req, res) => {
         await user.save();
       }
     } else {
-      // Create new user
       user = await User.create({
         email,
         name: name || email.split("@")[0],
         googleId,
         authProvider: "google",
-        // password is not required for OAuth users
       });
     }
 
-    // Create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
