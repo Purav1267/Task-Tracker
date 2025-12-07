@@ -122,7 +122,7 @@ export default function RegisterPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -left-2 top-0 h-8 w-8 rounded-md"
+              className="absolute -left-0 top-1.5 h-5 w-5 rounded-md"
               aria-label="Back to home"
             >
               <ArrowLeft className="h-4 w-4" />
