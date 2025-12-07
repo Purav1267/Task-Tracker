@@ -23,6 +23,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 
 ### User Authentication
 - ✅ **User Registration** - Create a new account with email and password
+- ✅ **Google Sign-In** - OAuth authentication with Google (available on both Login and Register pages)
 - ✅ **User Login** - Secure authentication with JWT tokens
 - ✅ **Google Sign-In** - OAuth authentication with Google
 - ✅ **User Logout** - Clear session and redirect to login
@@ -67,7 +68,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 
 ### Deployment
 - **Frontend**: Vercel (recommended for Next.js)
-- **Backend**: Railway / Render / Vercel Serverless Functions
+- **Backend**: Heroku / Railway / Render
 - **Database**: MongoDB Atlas (free tier)
 
 ## 💡 Tech Stack Rationale
@@ -323,98 +324,78 @@ BREW - Task Tracker/
 - `PUT /api/tasks/:id` - Update a task
 - `DELETE /api/tasks/:id` - Delete a task
 
-## 🚀 Deployment to Vercel
+## 🚀 Deployment Guide
 
-### Frontend Deployment (Next.js)
+This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. For detailed step-by-step instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
 
-1. **Push your code to GitHub**
+### Quick Deployment Summary
+
+#### Frontend Deployment (Vercel)
+
+1. **Push code to GitHub**
+2. **Go to [Vercel](https://vercel.com)** and import your repository
+3. **Configure project:**
+   - Root Directory: `frontend`
+   - Framework: Next.js (auto-detected)
+4. **Add Environment Variables:**
+   - `NEXT_PUBLIC_API_URL` = `https://your-heroku-app.herokuapp.com/api`
+   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = your Google Client ID
+5. **Deploy** - Vercel will automatically build and deploy
+
+#### Backend Deployment (Heroku)
+
+1. **Install Heroku CLI** and login
+2. **Create Heroku app:**
    ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
+   heroku create your-app-name-backend
    ```
+3. **Set environment variables:**
+   ```bash
+   heroku config:set MONGO_URI=your-mongodb-connection-string
+   heroku config:set JWT_SECRET=your-jwt-secret
+   heroku config:set GOOGLE_CLIENT_ID=your-google-client-id
+   ```
+4. **Deploy:**
+   - Connect Heroku to GitHub in Heroku Dashboard
+   - Enable automatic deploys
+   - Or use: `git subtree push --prefix server heroku main`
 
-2. **Deploy to Vercel**
-   - Go to [Vercel](https://vercel.com)
-   - Sign in with your GitHub account
-   - Click "Add New Project"
-   - Import your GitHub repository
-   - Configure the project:
-     - **Root Directory**: `frontend`
-     - **Framework Preset**: Next.js (auto-detected)
-     - **Build Command**: `npm run build` (default)
-     - **Output Directory**: `.next` (default)
-     - **Install Command**: `npm install` (default)
+### Important Notes
 
-3. **Add Environment Variables in Vercel**
-   - Go to Project Settings > Environment Variables
-   - Add the following:
-     - `NEXT_PUBLIC_API_URL` = `https://your-backend-url.com/api`
-     - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = `your-google-client-id`
-   - **Important**: Update your Google OAuth authorized origins to include your Vercel URL
-
-4. **Deploy**
-   - Click "Deploy"
-   - Vercel will build and deploy your app
-   - You'll get a URL like `https://your-app.vercel.app`
-
-### Backend Deployment Options
-
-#### Option 1: Railway (Recommended for Express.js)
-
-1. **Sign up at [Railway](https://railway.app)**
-2. **Create a New Project**
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository
-3. **Configure the Project**
-   - Set Root Directory to `server`
-   - Railway will auto-detect Node.js
-4. **Add Environment Variables**
-   - Go to Variables tab
-   - Add:
-     - `MONGO_URI` = your MongoDB connection string
-     - `JWT_SECRET` = your JWT secret
-     - `PORT` = `4000` (or leave empty, Railway auto-assigns)
-     - `GOOGLE_CLIENT_ID` = your Google Client ID
-5. **Deploy**
-   - Railway will automatically deploy
-   - You'll get a URL like `https://your-app.railway.app`
-   - Update `NEXT_PUBLIC_API_URL` in Vercel to this URL
-
-#### Option 2: Render
-
-1. **Sign up at [Render](https://render.com)**
-2. **Create a New Web Service**
-   - Connect your GitHub repository
-   - Set:
-     - **Name**: task-tracker-backend
-     - **Root Directory**: `server`
-     - **Environment**: Node
-     - **Build Command**: `npm install`
-     - **Start Command**: `npm start`
-3. **Add Environment Variables** (same as Railway)
-4. **Deploy**
-
-#### Option 3: Vercel Serverless Functions
-
-If you want to keep everything on Vercel, you can convert your Express.js backend to Vercel serverless functions. This requires refactoring your routes.
+- **Procfile** is already created in the `server` directory for Heroku
+- **PORT** is handled automatically by Heroku (no need to set it)
+- Update **Google OAuth** authorized origins with your production URLs
+- Ensure **MongoDB Atlas** network access allows all IPs (0.0.0.0/0) or Heroku's IPs
 
 ### Post-Deployment Checklist
 
-1. ✅ Update Google OAuth authorized origins with production URLs
-2. ✅ Update `NEXT_PUBLIC_API_URL` in Vercel to your backend URL
-3. ✅ Ensure MongoDB Atlas allows connections from your backend IP (or use 0.0.0.0/0 for development)
-4. ✅ Test authentication flow on production
-5. ✅ Test Google Sign-In on production
-6. ✅ Verify CORS settings allow your frontend domain
+1. ✅ Backend accessible at `https://your-app-name-backend.herokuapp.com`
+2. ✅ Frontend accessible at `https://your-app-name.vercel.app`
+3. ✅ Environment variables set correctly on both platforms
+4. ✅ Google OAuth production URLs added to Google Console
+5. ✅ MongoDB Atlas network access configured
+6. ✅ Test registration, login, and Google Sign-In on both pages
+7. ✅ Test all CRUD operations for tasks
+8. ✅ Verify CORS allows requests from Vercel to Heroku
 
-### Troubleshooting Deployment
+### Troubleshooting
 
-- **CORS Errors**: Make sure your backend CORS settings allow your Vercel frontend URL
-- **Environment Variables**: Double-check all environment variables are set correctly
-- **Google OAuth**: Ensure production URLs are added to Google Console authorized origins
-- **MongoDB Connection**: Verify MongoDB Atlas network access allows your backend server
+**Backend Issues:**
+- Check logs: `heroku logs --tail`
+- Verify all environment variables are set: `heroku config`
+- Ensure MongoDB connection string is correct
+
+**Frontend Issues:**
+- Check Vercel build logs in dashboard
+- Verify `NEXT_PUBLIC_API_URL` points to Heroku backend
+- Clear browser cache and test again
+
+**Google OAuth Issues:**
+- Verify production URLs are in Google Console
+- Check that `NEXT_PUBLIC_GOOGLE_CLIENT_ID` matches backend `GOOGLE_CLIENT_ID`
+- Ensure OAuth consent screen is configured
+
+For detailed troubleshooting, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
 
 ## 🤔 Assumptions
 
@@ -467,16 +448,9 @@ If you want to keep everything on Vercel, you can convert your Express.js backen
 
 6. **Code Organization**: Explain the separation between frontend and backend, and how the API layer abstracts HTTP requests.
 
-## 📄 License
-
-This project was created for the BREW Hiring Assignment.
-
 ## 👤 Author
 
 [Your Name]
 [Your Email]
 [Your GitHub Profile]
 
----
-
-**Built with ❤️ for BREW**
