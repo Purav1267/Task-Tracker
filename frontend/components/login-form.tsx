@@ -127,10 +127,10 @@ export function LoginForm({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -left-2 top-0"
+              className="absolute -left-2 top-0 h-8 w-8 rounded-md"
               aria-label="Back to home"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <CardTitle>Login to your account</CardTitle>
