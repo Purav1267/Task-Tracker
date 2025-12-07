@@ -339,8 +339,8 @@ This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. 
    - Root Directory: `frontend`
    - Framework: Next.js (auto-detected)
 4. **Add Environment Variables:**
-   - `NEXT_PUBLIC_API_URL` = `https://your-heroku-app.herokuapp.com/api`
-   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = your Google Client ID
+   - `NEXT_PUBLIC_API_URL` = `https://task-tracker-backend-6647-c435ebfb5871.herokuapp.com/api`
+   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = `307016727380-72mibbu5agps5sk0pkn3d0ngnpdmtmck.apps.googleusercontent.com`
 5. **Deploy** - Vercel will automatically build and deploy
 
 #### Backend Deployment (Heroku)
