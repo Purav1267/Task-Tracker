@@ -52,7 +52,7 @@ export default function RegisterPage() {
             });
 
             const buttonElement = document.getElementById("google-signin-button-register");
-            if (buttonElement) {
+            if (buttonElement && !buttonElement.hasChildNodes()) {
               (window as any).google.accounts.id.renderButton(buttonElement, {
                 theme: "outline",
                 size: "large",
@@ -111,7 +111,8 @@ export default function RegisterPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md">
+        <Card>
         <CardHeader className="relative">
           <Link href="/">
             <Button
@@ -224,6 +225,7 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

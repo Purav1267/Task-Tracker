@@ -68,7 +68,7 @@ export function LoginForm({
             });
 
             const buttonElement = document.getElementById("google-signin-button");
-            if (buttonElement) {
+            if (buttonElement && !buttonElement.hasChildNodes()) {
               (window as any).google.accounts.id.renderButton(buttonElement, {
                 theme: "outline",
                 size: "large",
