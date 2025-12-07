@@ -12,13 +12,12 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Tech Stack Rationale](#tech-stack-rationale)
 - [Setup Instructions](#setup-instructions)
 - [Google OAuth Setup](#google-oauth-setup)
 - [Project Structure](#project-structure)
 - [API Endpoints](#api-endpoints)
-- [Deployment to Vercel](#deployment-to-vercel)
-- [Assumptions](#assumptions)
+- [Deployment Guide](#deployment-guide)
+- [Troubleshooting](#troubleshooting)
 - [Future Enhancements](#future-enhancements)
 
 ## ✨ Features
@@ -30,15 +29,19 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - ✅ **User Logout** - Clear session and redirect to home page
 - ✅ **Protected Routes** - Dashboard and task management require authentication
 - ✅ **Data Privacy** - Each user can only access their own tasks
+- ✅ **Back Navigation** - Back arrow button on login/register pages to return home
 
 ### Task Management - CRUD Operations
 - ✅ **Create Task** - Add new tasks with title, description, due date, priority, and status
 - ✅ **Read Tasks** - View all personal tasks in a clean, organized dashboard
 - ✅ **Update Task** - Edit existing task details
-- ✅ **Delete Task** - Remove tasks with confirmation
+- ✅ **Delete Task** - Remove tasks with frontend confirmation dialog
 - ✅ **Filter by Status** - Filter tasks by "To Do", "In Progress", or "Done"
 - ✅ **Search Tasks** - Search tasks by title or description
+- ✅ **Sort Tasks** - Sort by newest, priority, due date, or title
 - ✅ **Dark Mode** - Toggle between light and dark themes
+- ✅ **Visual Indicators** - Color-coded priority and status badges
+- ✅ **Overdue Alerts** - Visual indicators for overdue tasks
 
 ### Task Fields
 - **Title** (Required) - Task name
@@ -57,6 +60,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - **Axios** - HTTP client for API requests
 - **React Hooks** - useState, useEffect for state management
 - **Next Themes** - Dark mode support
+- **Lucide React** - Icon library
 
 ### Backend
 - **Node.js** - JavaScript runtime
@@ -66,38 +70,12 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - **JWT** - JSON Web Tokens for authentication
 - **bcryptjs** - Password hashing
 - **google-auth-library** - Google OAuth verification
+- **CORS** - Cross-origin resource sharing
 
 ### Deployment
-- **Frontend**: Vercel (recommended for Next.js)
-- **Backend**: Heroku / Railway / Render
+- **Frontend**: Vercel
+- **Backend**: Heroku
 - **Database**: MongoDB Atlas (free tier)
-
-## 💡 Tech Stack Rationale
-
-### Why Next.js + React?
-- **Performance**: Next.js provides server-side rendering, automatic code splitting, and optimized production builds
-- **Developer Experience**: Excellent TypeScript support, hot reloading, and a robust development environment
-- **Modern Architecture**: App Router provides a clean, file-based routing system that aligns with modern React patterns
-- **Assignment Requirement**: The assignment specifically requires Next.js/React, making this the natural choice
-
-### Why Express.js + MongoDB?
-- **Scalability**: MongoDB's flexible schema allows for easy iteration and feature additions
-- **RESTful Architecture**: Express.js provides a clean, standard REST API structure that's easy to understand and maintain
-- **Security**: JWT-based authentication ensures secure, stateless user sessions
-- **Free Tier Availability**: MongoDB Atlas offers a generous free tier, meeting the assignment's requirement for free cloud-hosted database
-- **Separation of Concerns**: A dedicated backend allows for better security, validation, and future scalability
-
-### Why Tailwind CSS + Shadcn/ui?
-- **Rapid Development**: Tailwind's utility classes enable fast UI development without writing custom CSS
-- **Responsive Design**: Built-in responsive breakpoints (`sm:`, `md:`, `lg:`) ensure the application works seamlessly on all devices
-- **Consistency**: Shadcn/ui provides pre-built, accessible components that follow design best practices
-- **Customization**: Both tools allow for easy customization while maintaining a professional appearance
-
-### Why JWT Authentication?
-- **Stateless**: JWT tokens eliminate the need for server-side session storage
-- **Scalable**: Works seamlessly across multiple servers and microservices
-- **Secure**: Tokens are signed and can include expiration times
-- **Standard**: Industry-standard approach that's well-documented and widely understood
 
 ## 📦 Setup Instructions
 
@@ -237,13 +215,28 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id-here
 - The frontend creates the token, and the backend verifies it using the same Client ID
 - Add `.env` and `.env.local` to `.gitignore` (they should already be there)
 
-### Step 3: Test Google Sign-In
+### Step 3: Fix Origin Mismatch Error (If Needed)
 
-1. Start your backend server
-2. Start your frontend development server
-3. Go to the login page
-4. You should see the Google Sign-In button
-5. Click it and test the authentication flow
+If you get "Error 400: origin_mismatch":
+
+1. **Verify the exact URL:**
+   - Open browser Developer Tools (F12) → Console
+   - Type: `window.location.origin`
+   - Copy the exact value shown
+
+2. **Update Google Cloud Console:**
+   - Go to "APIs & Services" > "Credentials"
+   - Edit your OAuth 2.0 Client ID
+   - Add the EXACT URL to "Authorized JavaScript origins"
+   - **Important:** 
+     - Use `https://` (not `http://`) for production
+     - NO trailing slash
+     - Exact match - case sensitive
+
+3. **Save and wait:**
+   - Click "SAVE"
+   - Wait 1-5 minutes for changes to propagate
+   - Clear browser cache and try again
 
 ## 📁 Project Structure
 
@@ -255,7 +248,8 @@ BREW - Task Tracker/
 │   │   │   ├── login/
 │   │   │   └── register/
 │   │   ├── dashboard/
-│   │   └── layout.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
 │   ├── components/
 │   │   ├── ui/          # Shadcn/ui components
 │   │   ├── TaskCard.tsx
@@ -267,7 +261,10 @@ BREW - Task Tracker/
 │   ├── lib/
 │   │   ├── api.ts      # Axios configuration
 │   │   ├── auth.ts     # Auth utilities
+│   │   ├── constants.ts
 │   │   └── utils.ts    # Utility functions
+│   ├── types/
+│   │   └── index.ts
 │   └── package.json
 ├── server/
 │   ├── models/
@@ -279,6 +276,7 @@ BREW - Task Tracker/
 │   ├── middleware/
 │   │   └── auth.js     # JWT verification
 │   ├── index.js         # Express server entry
+│   ├── Procfile         # Heroku deployment file
 │   └── package.json
 └── README.md
 ```
@@ -327,52 +325,99 @@ BREW - Task Tracker/
 
 ## 🚀 Deployment Guide
 
-This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. For detailed step-by-step instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
-
-### Quick Deployment Summary
-
-#### Frontend Deployment (Vercel)
+### Frontend Deployment (Vercel)
 
 1. **Push code to GitHub**
-2. **Go to [Vercel](https://vercel.com)** and import your repository
-3. **Configure project:**
-   - Root Directory: `frontend`
-   - Framework: Next.js (auto-detected)
-4. **Add Environment Variables:**
-   - `NEXT_PUBLIC_API_URL` = `https://task-tracker-backend-6647-c435ebfb5871.herokuapp.com/api`
-   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = `307016727380-72mibbu5agps5sk0pkn3d0ngnpdmtmck.apps.googleusercontent.com`
-5. **Deploy** - Vercel will automatically build and deploy
-
-#### Backend Deployment (Heroku)
-
-1. **Install Heroku CLI** and login
-2. **Create Heroku app:**
    ```bash
-   heroku create your-app-name-backend
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
    ```
-3. **Set environment variables:**
-   ```bash
-   heroku config:set MONGO_URI=your-mongodb-connection-string
-   heroku config:set JWT_SECRET=your-jwt-secret
-   heroku config:set GOOGLE_CLIENT_ID=your-google-client-id
-   ```
-4. **Deploy:**
-   - **Use direct push from server directory** (see DEPLOY_BACKEND.md for details):
-   ```bash
-   cd server
-   git init && git add . && git commit -m "Deploy"
-   git remote add heroku https://git.heroku.com/task-tracker-backend-6647.git
-   git push heroku HEAD:main --force
-   rm -rf .git
-   ```
-   - **Important:** Heroku requires `package.json` at the root, so always deploy from the `server` directory
 
-### Important Notes
+2. **Go to [Vercel](https://vercel.com)** and sign in with GitHub
 
-- **Procfile** is already created in the `server` directory for Heroku
-- **PORT** is handled automatically by Heroku (no need to set it)
-- Update **Google OAuth** authorized origins with your production URLs
-- Ensure **MongoDB Atlas** network access allows all IPs (0.0.0.0/0) or Heroku's IPs
+3. **Import Your Project:**
+   - Click "Add New Project"
+   - Select your GitHub repository
+   - Click "Import"
+
+4. **Configure Project Settings:**
+   - **Root Directory**: `frontend` (IMPORTANT!)
+   - **Framework Preset**: Next.js (auto-detected)
+   - **Build Command**: `npm run build` (default)
+   - **Output Directory**: `.next` (default)
+   - **Install Command**: `npm install` (default)
+
+5. **Add Environment Variables:**
+   - Go to Project Settings > Environment Variables
+   - Add:
+     - `NEXT_PUBLIC_API_URL` = `https://task-tracker-backend-6647-c435ebfb5871.herokuapp.com/api`
+     - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = `307016727380-72mibbu5agps5sk0pkn3d0ngnpdmtmck.apps.googleusercontent.com`
+   - Make sure to add them for all environments (Production, Preview, Development)
+
+6. **Deploy:**
+   - Click "Deploy"
+   - Wait for the build to complete
+   - Your app will be live at: `https://your-app-name.vercel.app`
+
+### Backend Deployment (Heroku)
+
+**Important:** Heroku requires `package.json` at the root of the deployed directory. Since our server is in a subdirectory, we need to use a specific deployment method.
+
+#### Step 1: Install Heroku CLI
+
+```bash
+# macOS
+brew tap heroku/brew && brew install heroku
+
+# Or download from: https://devcenter.heroku.com/articles/heroku-cli
+```
+
+#### Step 2: Login and Create App
+
+```bash
+heroku login
+heroku create your-app-name-backend
+```
+
+#### Step 3: Set Environment Variables
+
+```bash
+heroku config:set MONGO_URI=your-mongodb-connection-string -a your-app-name-backend
+heroku config:set JWT_SECRET=your-jwt-secret -a your-app-name-backend
+heroku config:set GOOGLE_CLIENT_ID=your-google-client-id -a your-app-name-backend
+heroku config:set FRONTEND_URL=https://your-frontend-url.vercel.app -a your-app-name-backend
+```
+
+#### Step 4: Deploy Backend
+
+**Use direct push from server directory** (most reliable method):
+
+```bash
+cd server
+git init
+git add .
+git commit -m "Deploy server to Heroku"
+git remote add heroku https://git.heroku.com/your-app-name-backend.git
+git push heroku HEAD:main --force
+cd ..
+rm -rf server/.git
+```
+
+**Why this method?**
+- Heroku's buildpack looks for `package.json` at the root
+- By pushing directly from the `server` directory, `package.json` is at the root
+- The `Procfile` is also at the root, which Heroku needs
+
+#### Step 5: Verify Deployment
+
+```bash
+# Check logs
+heroku logs --tail -a your-app-name-backend
+
+# Test API
+curl https://your-app-name-backend.herokuapp.com/api/tasks
+```
 
 ### Post-Deployment Checklist
 
@@ -380,58 +425,108 @@ This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. 
 2. ✅ Frontend accessible at `https://your-app-name.vercel.app`
 3. ✅ Environment variables set correctly on both platforms
 4. ✅ Google OAuth production URLs added to Google Console
-5. ✅ MongoDB Atlas network access configured
-6. ✅ Test registration, login, and Google Sign-In on both pages
-7. ✅ Test all CRUD operations for tasks
-8. ✅ Verify CORS allows requests from Vercel to Heroku
+5. ✅ MongoDB Atlas network access configured (allow all IPs: 0.0.0.0/0)
+6. ✅ CORS configured to allow requests from Vercel domain
+7. ✅ Test registration, login, and Google Sign-In on both pages
+8. ✅ Test all CRUD operations for tasks
+9. ✅ Verify logout redirects to home page
 
-### Troubleshooting
+## 🔧 Troubleshooting
 
-**Backend Issues:**
-- Check logs: `heroku logs --tail`
-- Verify all environment variables are set: `heroku config`
-- Ensure MongoDB connection string is correct
+### Backend Issues
 
-**Frontend Issues:**
-- Check Vercel build logs in dashboard
-- Verify `NEXT_PUBLIC_API_URL` points to Heroku backend
-- Clear browser cache and test again
+**Problem: Build fails with "App not compatible with buildpack"**
+- **Solution:** Make sure you're deploying from the `server` directory using the direct push method
+- Verify `package.json` exists in the server directory
+- Check that `Procfile` exists and contains: `web: node index.js`
 
-**Google OAuth Issues:**
-- Verify production URLs are in Google Console
-- Check that `NEXT_PUBLIC_GOOGLE_CLIENT_ID` matches backend `GOOGLE_CLIENT_ID`
-- Ensure OAuth consent screen is configured
+**Problem: App crashes on Heroku**
+- Check logs: `heroku logs --tail -a your-app-name-backend`
+- Ensure all environment variables are set: `heroku config`
+- Verify MongoDB connection string is correct
+- Check that PORT is handled correctly (Heroku assigns it automatically)
 
-For detailed troubleshooting, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
+**Problem: CORS errors**
+- Update CORS settings in `server/index.js` to allow your Vercel domain
+- Set `FRONTEND_URL` environment variable in Heroku
+- Verify CORS allows requests from your frontend URL
 
-## 🤔 Assumptions
+**Problem: MongoDB connection fails**
+- Verify MongoDB Atlas network access allows all IPs (0.0.0.0/0) or Heroku's IPs
+- Check connection string format
+- Ensure database user has correct permissions
 
-1. **REST API Architecture**: I assumed the assignment allowed a traditional REST API approach (Express.js + MongoDB) rather than requiring a serverless solution like Firebase. This provides more control over the backend logic and better demonstrates full-stack development skills.
+### Frontend Issues
 
-2. **OAuth Implementation**: Google Sign-In is implemented using Google Identity Services (newer approach) rather than the older OAuth 2.0 flow, providing a better user experience.
+**Problem: API calls fail**
+- Verify `NEXT_PUBLIC_API_URL` is set correctly in Vercel
+- Check browser console for CORS errors
+- Ensure backend is running and accessible
 
-3. **Task Privacy**: All tasks are automatically scoped to the authenticated user. The backend middleware ensures users can only access their own tasks, providing data privacy without requiring explicit user ID parameters in frontend requests.
+**Problem: Google Sign-In doesn't work**
+- Verify `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is set in Vercel
+- Check Google Console for correct authorized origins
+- Ensure production URL is added: `https://your-app.vercel.app`
+- Clear browser cache and cookies
 
-4. **Real-time Updates**: The current implementation uses polling (refresh on actions) rather than WebSockets or real-time subscriptions. This was chosen for simplicity, but real-time updates could be added using Socket.io or similar technologies.
+**Problem: Build fails on Vercel**
+- Check build logs in Vercel dashboard
+- Ensure all dependencies are in `package.json`
+- Verify TypeScript errors are resolved
+- Make sure Root Directory is set to `frontend`
 
-5. **Date Handling**: Due dates are stored as Date objects in MongoDB and handled as ISO strings in the frontend. The conversion between HTML date inputs and MongoDB dates is handled automatically by the backend.
+### Google OAuth Issues
 
-6. **Error Handling**: Basic error handling is implemented with try-catch blocks and user-friendly alerts. Production applications would benefit from more sophisticated error handling and user feedback systems.
+**Problem: "Error 400: origin_mismatch"**
+- Go to Google Cloud Console > Credentials
+- Edit your OAuth 2.0 Client ID
+- Add EXACT URL to "Authorized JavaScript origins":
+  - `https://your-app.vercel.app` (NO trailing slash)
+  - `http://localhost:3000` (for development)
+- Save and wait 1-5 minutes for changes to propagate
+- Clear browser cache
+
+**Problem: "Wrong recipient, payload audience != requiredAudience"**
+- Use the **same Client ID** for both frontend and backend
+- Frontend: `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+- Backend: `GOOGLE_CLIENT_ID`
+- They must match exactly
+
+**Problem: OAuth consent screen issues**
+- Make sure your app is published (if you want public access)
+- Or add your email as a test user if in testing mode
+- Verify scopes are set: `email`, `profile`, `openid`
+
+### General Issues
+
+**Problem: Environment variables not working**
+- Restart the app after setting environment variables
+- For Vercel: Redeploy after adding environment variables
+- For Heroku: Restart dynos: `heroku restart -a your-app-name-backend`
+
+**Problem: Changes not reflecting**
+- Clear browser cache
+- Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
+- Check if deployment completed successfully
+- Verify you're looking at the correct environment (production vs preview)
 
 ## 🎯 Future Enhancements
 
-### Bonus Features
+### Completed Features
 - [x] Google OAuth integration
 - [x] Dark mode toggle
-- [ ] Visual priority indicators (color-coded badges)
-- [ ] Advanced sorting (by priority, due date, creation date)
+- [x] Visual priority indicators
+- [x] Advanced sorting
+- [x] Overdue task indicators
+- [x] Frontend delete confirmation dialog
+- [x] Back navigation buttons
+
+### Planned Features
 - [ ] Task categories/tags
 - [ ] Drag-and-drop status updates
 - [ ] Task completion statistics
 - [ ] Export tasks to CSV/JSON
 - [ ] Task reminders/notifications
-
-### Additional Improvements
 - [ ] Real-time updates using WebSockets
 - [ ] Image attachments for tasks
 - [ ] Task templates
@@ -440,24 +535,30 @@ For detailed troubleshooting, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
 - [ ] Pagination for large task lists
 - [ ] Unit and integration tests
 
-## 📝 Notes for Video Submission
+## 📝 Development Notes
 
-### Key Points to Highlight:
-1. **Architecture Decision**: Explain why you chose Express.js + MongoDB over Firebase, emphasizing the learning value and full-stack demonstration.
+### Architecture Decisions
 
-2. **Security Implementation**: Walk through the JWT middleware that ensures users can only access their own tasks.
+1. **REST API Architecture**: Chose Express.js + MongoDB over Firebase to demonstrate full-stack development skills and provide more control over backend logic.
 
-3. **OAuth Integration**: Demonstrate Google Sign-In functionality and explain the token verification process.
+2. **OAuth Implementation**: Google Sign-In uses Google Identity Services (newer approach) for better user experience.
 
-4. **Filtering & Search**: Demonstrate the client-side filtering and search functionality, explaining the useMemo hook for performance optimization.
+3. **Task Privacy**: All tasks are automatically scoped to the authenticated user. The backend middleware ensures users can only access their own tasks.
 
-5. **Responsive Design**: Show the application working on different screen sizes, highlighting Tailwind's responsive utilities.
+4. **Real-time Updates**: Current implementation uses polling (refresh on actions). Real-time updates could be added using Socket.io.
 
-6. **Code Organization**: Explain the separation between frontend and backend, and how the API layer abstracts HTTP requests.
+5. **Error Handling**: Basic error handling with try-catch blocks and user-friendly messages. Production applications would benefit from more sophisticated error handling.
+
+## 📄 License
+
+This project was created for the BREW Hiring Assignment.
 
 ## 👤 Author
 
-[Your Name]
-[Your Email]
+[Your Name]  
+[Your Email]  
 [Your GitHub Profile]
 
+---
+
+**Built with ❤️ for BREW**
