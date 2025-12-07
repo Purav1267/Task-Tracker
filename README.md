@@ -357,7 +357,7 @@ This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. 
    heroku config:set GOOGLE_CLIENT_ID=your-google-client-id
    ```
 4. **Deploy:**
-   - **Recommended Method:** Use direct push from server directory (see DEPLOY_BACKEND.md)
+   - **Use direct push from server directory** (see DEPLOY_BACKEND.md for details):
    ```bash
    cd server
    git init && git add . && git commit -m "Deploy"
@@ -365,7 +365,7 @@ This project is deployed with **Frontend on Vercel** and **Backend on Heroku**. 
    git push heroku HEAD:main --force
    rm -rf .git
    ```
-   - **Alternative:** Connect Heroku to GitHub in Heroku Dashboard and enable automatic deploys
+   - **Important:** Heroku requires `package.json` at the root, so always deploy from the `server` directory
 
 ### Important Notes
 

@@ -23,6 +23,7 @@ import { saveToken } from "@/lib/auth";
 import { LoginCredentials } from "@/types";
 import Link from "next/link";
 import { useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -121,7 +122,17 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader>
+        <CardHeader className="relative">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -left-2 top-0"
+              aria-label="Back to home"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
             Enter your email below to login to your account

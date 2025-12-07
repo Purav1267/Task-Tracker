@@ -116,24 +116,23 @@ export default function RegisterPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6">
-      <div className="w-full max-w-md relative">
-        <Link href="/">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute -top-4 left-0 mb-4"
-            aria-label="Back to home"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <Card>
-          <CardHeader>
-            <CardTitle>Create an account</CardTitle>
-            <CardDescription>
-              Enter your information to get started
-            </CardDescription>
-          </CardHeader>
+      <Card className="w-full max-w-md">
+        <CardHeader className="relative">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -left-2 top-0"
+              aria-label="Back to home"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <CardTitle>Create an account</CardTitle>
+          <CardDescription>
+            Enter your information to get started
+          </CardDescription>
+        </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -230,7 +229,6 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
-      </div>
     </div>
   );
 }
