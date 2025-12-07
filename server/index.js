@@ -9,8 +9,12 @@ const taskRoutes = require("./routes/tasks");
 const app = express();
 
 // CORS configuration - allow requests from frontend
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [process.env.FRONTEND_URL, 'http://localhost:3000'] 
+  : '*';
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || '*', // Allow all origins in development, specific in production
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

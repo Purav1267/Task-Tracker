@@ -14,6 +14,6 @@ export const getToken = (): string | null => {
 export const logout = (): void => {
   if (typeof window !== "undefined") {
     localStorage.removeItem("token");
-    window.location.href = "/auth/login";
+    window.location.href = "/";
   }
 };

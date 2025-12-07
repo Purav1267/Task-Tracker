@@ -4,7 +4,9 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 
 ## 🚀 Live Demo
 
-[Add your deployed URL here after deployment]
+**Frontend:** [https://task-tracker-hazel-theta.vercel.app/](https://task-tracker-hazel-theta.vercel.app/)
+
+**Backend API:** [https://task-tracker-backend-6647-c435ebfb5871.herokuapp.com/api](https://task-tracker-backend-6647-c435ebfb5871.herokuapp.com/api)
 
 ## 📋 Table of Contents
 
@@ -25,8 +27,7 @@ A full-stack task management application built for the BREW Hiring Assignment. T
 - ✅ **User Registration** - Create a new account with email and password
 - ✅ **Google Sign-In** - OAuth authentication with Google (available on both Login and Register pages)
 - ✅ **User Login** - Secure authentication with JWT tokens
-- ✅ **Google Sign-In** - OAuth authentication with Google
-- ✅ **User Logout** - Clear session and redirect to login
+- ✅ **User Logout** - Clear session and redirect to home page
 - ✅ **Protected Routes** - Dashboard and task management require authentication
 - ✅ **Data Privacy** - Each user can only access their own tasks
 
@@ -212,10 +213,10 @@ A full-stack task management application built for the BREW Hiring Assignment. T
    - Name: "Task Tracker Web Client"
    - **Authorized JavaScript origins:**
      - `http://localhost:3000` (for development)
-     - Add your production URL when deploying (e.g., `https://your-app.vercel.app`)
+     - `https://task-tracker-hazel-theta.vercel.app` (production)
    - **Authorized redirect URIs:**
      - `http://localhost:3000` (for development)
-     - Your production URL when deploying
+     - `https://task-tracker-hazel-theta.vercel.app` (production)
    - Click "Create"
    - **Copy the Client ID** - you'll need this!
 
